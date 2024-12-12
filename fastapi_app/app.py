@@ -16,10 +16,22 @@ from starlette.responses import HTMLResponse
 
 from auth.telegram_auth import auth_telegram_webApp, verify_telegram_data_webApp
 
-from messeges import dummy_messages, dummy_users
 from logger import Logger
 
 import os
+
+dummy_users = [
+    { "id": 985754362, "name": 'Эдуард', "surname": 'Петров', "phone": '+79234567890' },
+    { "id": 735569411, "name": 'Максим', "surname": 'Иванов', "phone": '+76434556678' },
+    { "id": 7369362084, "name": 'Дмитрий', "surname": 'Макаров', "phone": '+75236573568' },
+    { "id": -1002116285714, "name": 'Алексей', "surname": 'Калашников', "phone": '+73234456245' },
+    { "id": -1002332288418, "name": 'Юрий', "surname": 'Белый', "phone": '+71210002553' },
+{ "id": 985754362, "name": 'Эдуард', "surname": 'Петров', "phone": '+79234567890' },
+    { "id": 735569411, "name": 'Максим', "surname": 'Иванов', "phone": '+76434556678' },
+    { "id": 7369362084, "name": 'Дмитрий', "surname": 'Макаров', "phone": '+75236573568' },
+    { "id": -1002116285714, "name": 'Алексей', "surname": 'Калашников', "phone": '+73234456245' },
+    { "id": -1002332288418, "name": 'Юрий', "surname": 'Белый', "phone": '+71210002553' },
+];
 
 FAST_API_PORT = os.getenv('FAST_API_PORT')
 FAST_API_HOST = os.getenv('FAST_API_HOST')
@@ -142,7 +154,7 @@ class Application:
                 self.log.debug("Message was saved")
             return JSONResponse(content=[])
 
-        self.fast_api.mount("/static", StaticFiles(directory="build/static"), name="static")
+        self.fast_api.mount("/static", StaticFiles(directory="./build/static"), name="static")
 
     def add_socket(self):
         @self.sio.on('connect')
