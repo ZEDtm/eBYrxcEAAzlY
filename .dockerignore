@@ -1,0 +1,5 @@
+# ignore all
+.venv
+.dockerignore
+.gitignore
+nginx.conf

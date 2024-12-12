@@ -1,0 +1,1 @@
+from auth import telegram_auth
