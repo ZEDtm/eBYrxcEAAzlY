@@ -17,8 +17,10 @@ from starlette.responses import HTMLResponse
 from auth.telegram_auth import auth_telegram_webApp, verify_telegram_data_webApp
 
 from logger import Logger
+from config import Config
 
-import os
+from config import FAST_API_HOST, FAST_API_PORT, FAST_API_URL ,MONGO_URL, TG_TOKEN_BOT
+
 
 dummy_users = [
     { "id": 985754362, "name": 'Эдуард', "surname": 'Петров', "phone": '+79234567890' },
@@ -33,15 +35,9 @@ dummy_users = [
     { "id": -1002332288418, "name": 'Юрий', "surname": 'Белый', "phone": '+71210002553' },
 ];
 
-FAST_API_PORT = os.getenv('FAST_API_PORT')
-FAST_API_HOST = os.getenv('FAST_API_HOST')
-FAST_API_URL = os.getenv('FAST_API_URL')
-MONGO_URL = os.getenv('MONGO_URL')
-TG_TOKEN_BOT = os.getenv('TG_TOKEN_BOT')
-
-TOKEN = '6819523929:AAHHn_2yAPrP0a7BU8dXouvh7ivDxJUg5O0'
-templates = Jinja2Templates(directory="./build")
-URL = 'localhost:4000'
+# TOKEN = '6819523929:AAHHn_2yAPrP0a7BU8dXouvh7ivDxJUg5O0'
+# templates = Jinja2Templates(directory="./build")
+# URL = 'localhost:4000'
 
 
 

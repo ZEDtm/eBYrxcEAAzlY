@@ -90,9 +90,6 @@ services:
       FAST_API_URL: ${FAST_API_URL}
       MONGO_URL: ${MONGO_URL}
       TG_TOKEN_BOT: ${TG_TOKEN_BOT}
-    depends_on:
-      mongo:
-        condition: service_healthy
     container_name: fastapi_app
     command: ["python", "app.py"]
 
