@@ -45,7 +45,7 @@ ALLOWED_HOSTS = env.list(
     'ALLOWED_HOSTS',
     default=[
         '127.0.0.1', 'localhost',
-        'beae-95-24-22-18.ngrok-free.app'
+        '185.239.50.63'
     ]
 )
 

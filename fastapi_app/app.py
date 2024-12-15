@@ -199,4 +199,4 @@ if __name__ == "__main__":
     import uvicorn
 
     app = Application().create_app()
-    uvicorn.run(app, host=FAST_API_HOST, port=FAST_API_PORT)
+    uvicorn.run(app, host='0.0.0.0', port=FAST_API_PORT)
