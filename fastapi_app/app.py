@@ -21,6 +21,7 @@ from logger import Logger
 from config import FAST_API_HOST, FAST_API_PORT, FAST_API_URL ,MONGO_URL, TG_TOKEN_BOT
 
 
+
 dummy_users = [
     { "id": 985754362, "name": 'Эдуард', "surname": 'Петров', "phone": '+79234567890' },
     { "id": 735569411, "name": 'Максим', "surname": 'Иванов', "phone": '+76434556678' },
@@ -35,7 +36,7 @@ dummy_users = [
 ];
 
 # TOKEN = '6819523929:AAHHn_2yAPrP0a7BU8dXouvh7ivDxJUg5O0'
-# templates = Jinja2Templates(directory="./build")
+#
 # URL = 'localhost:4000'
 
 
@@ -56,6 +57,8 @@ class Application:
         self.add_routers()
         self.messages_collection = self.db["messages"]
         self.unread_messages_collection = self.db["unread_messages"]
+
+        self.templates = Jinja2Templates(directory="./build")
 
     def add_middleware(self):
         self.fast_api.add_middleware(
@@ -85,7 +88,7 @@ class Application:
                 return FileResponse('./build/auth.html')
             user = await verify_telegram_data_webApp(init_data, TG_TOKEN_BOT)
             if user:
-                return templates.TemplateResponse("index.html", {
+                return self.templates.TemplateResponse("index.html", {
                     "request": request,
                     "fast_api_url": FAST_API_URL,
                     "api_key": "{}".format(TG_TOKEN_BOT)
@@ -95,9 +98,9 @@ class Application:
 
         @self.fast_api.get("/noAuth", response_class=HTMLResponse)
         async def read_root(request: Request):
-            return templates.TemplateResponse("index.html", {
+            return self.templates.TemplateResponse("index.html", {
                 "request": request,
-                "fast_api_url": URL,
+                "fast_api_url": FAST_API_URL,
                 "api_key": "{}".format(TG_TOKEN_BOT)
             })
 
