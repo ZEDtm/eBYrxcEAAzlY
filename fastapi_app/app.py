@@ -35,9 +35,6 @@ dummy_users = [
     { "id": -1002332288418, "name": 'Юрий', "surname": 'Белый', "phone": '+71210002553' },
 ];
 
-# TOKEN = '6819523929:AAHHn_2yAPrP0a7BU8dXouvh7ivDxJUg5O0'
-#
-# URL = 'localhost:4000'
 
 
 
@@ -202,4 +199,4 @@ if __name__ == "__main__":
     import uvicorn
 
     app = Application().create_app()
-    uvicorn.run(app, host='0.0.0.0', port=FAST_API_PORT)
+    uvicorn.run(app, host='0.0.0.0', port=4000)
