@@ -10,10 +10,11 @@ from import_export.signals import post_import
 
 from admin_panel.forms import MailingForm
 from admin_panel.models import TgUser, Mailing, Admin, InviteUser, YookassaConfig, Report, ApplicationsBuy, \
-    ApplicationsSell, GroupUser
+    ApplicationsSell, GroupUser, User
 
 
 class BotAdminSite(admin.AdminSite):
+
     site_title = "Управление ботом"
     site_header = "Управление ботом"
     index_title = "Управление ботом"
@@ -146,6 +147,8 @@ class TgUserAdmin(admin.ModelAdmin):
     search_fields = ('telegram_id', 'username', 'ref_code', 'fio')
     list_editable = ('block',)
     ordering = ('-telegram_id',)
+
+
 
     def save_model(self, request, obj, form, change):
         if change:  # if the object is being updated

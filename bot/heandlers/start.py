@@ -1,15 +1,18 @@
+import logging
+import string
 import textwrap
 from datetime import datetime, timedelta
+import random
 
+import aiohttp
 import pytz
 from aiogram import Bot
 from aiogram import types, Router, F
 from aiogram.exceptions import TelegramBadRequest
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery, FSInputFile, BufferedInputFile
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-
 from admin_panel.models import TgUser, Report, WorkerUser, ApplicationsBuy, ApplicationsSell
 from bot.api_via_btc import get_hash_rate, get_balance
 from bot.callback_factory import MenuCallbackData, BackCallbackData, \
@@ -23,10 +26,8 @@ from bot.keyboards.inline import get_lk_buttons, payment_buttons, get_support_bu
 from bot.middleware.apchendler import recurment_pay
 from bot.service_async import get_xlsx
 from bot.state_group import UserStart
-
+import BotInvest.settings as settings
 start_router = Router(name=__name__)
-
-
 @start_router.message(CommandStart())
 async def command_start(message: types.Message, state: FSMContext):
     """Команда /start"""
@@ -158,7 +159,71 @@ async def command_start(message: types.Message, state: FSMContext):
                     )
                 )
 
+@start_router.message()
+async def echo_handler(message: Message) -> None:
+    """
+    Handler will forward receive a message to the FastAPI server
+    """
+    if message.reply_to_message:
+        try:
+            message_data = {
+                "user": message.chat.id,
+                "message": {
+                    "id": message.message_id,
+                    "text": message.text or "",
+                    "status": "sent",
+                    "sender": message.chat.id,
+                    "recipient": 0,
+                    "date": int(message.date.timestamp()),
+                    "files": []
+                }
+            }
 
+            if message.photo:
+                photo = max(message.photo, key=lambda p: p.width * p.height)
+                file_data = {
+                    "file_name": await generate_random_string(10),
+                    "file_id": photo.file_id,
+                    "file_size": photo.file_size,
+                    "mime_type": "image/jpeg"  # Assuming all photos are JPEG
+                }
+                message_data["message"]["files"].append(file_data)
+
+            if message.document:
+                file_data = {
+                    "file_name": await generate_random_string(10),
+                    "file_id": message.document.file_id,
+                    "file_size": message.document.file_size,
+                    "mime_type": message.document.mime_type
+                }
+                message_data["message"]["files"].append(file_data)
+
+            if message.video:
+                file_data = {
+                    "file_name": await generate_random_string(10),
+                    "file_id": message.video.file_id,
+                    "file_size": message.video.file_size,
+                    "mime_type": message.video.mime_type
+                }
+                message_data["message"]["files"].append(file_data)
+
+            headers = {
+                'Authorization': f'Bearer {settings.TG_TOKEN_BOT}'
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.post(settings.FASTAPI_URL, headers=headers, json=message_data) as response:
+                    if response.status != 200:
+                        logging.error(f"Failed to send message to FastAPI: {await response.text()}")
+                    else:
+                        logging.info("Message sent to FastAPI successfully")
+
+        except Exception as e:
+            logging.error(f"Error processing message: {e}")
+
+async def generate_random_string(length=10):
+    characters = string.ascii_letters + string.digits
+    random_string = ''.join(random.choice(characters) for _ in range(length))
+    return random_string
 @start_router.message(UserStart.send_passport)
 async def get_passport(message: Message, state: FSMContext):
     passport_data = message.text

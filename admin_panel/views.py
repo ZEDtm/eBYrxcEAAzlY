@@ -10,7 +10,7 @@ from aiogram import Bot
 from aiogram.types import BufferedInputFile
 from asgiref.sync import sync_to_async
 from django.conf import settings
-
+from django.http import HttpResponseForbidden
 from bot.get_now_month import month_name_to_number
 from bot.misc.mailing import send_message_mailing
 from django.contrib import messages
@@ -22,12 +22,11 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from loguru import logger
 from pydantic import BaseModel, ValidationError
-
+from django.http import JsonResponse
 from admin_panel.forms import MailingForm
-from admin_panel.models import Mailing, TgUser
+from admin_panel.models import Mailing, TgUser, Admin
 from bot.service_async import get_all_admins_id
 from bot.yookassa_schema import YooKassaSchema
-
 
 class WebHookSchema(BaseModel):
     id: str
@@ -196,3 +195,42 @@ def check_pay_view(request):
 
         return HttpResponse(status=200)
     return HttpResponse(status=500)
+
+
+@csrf_exempt
+def get_users(request):
+    if request.method == 'GET':
+        api_key = request.headers.get("Authorization")
+        if api_key != "Bearer {}".format('<BOT_TOKEN>'):
+            return JsonResponse(
+                {"error": "Unauthorized"},
+                status=401
+            )
+        else:
+            users = TgUser.objects.all()
+            list_users = []
+            for user in users:
+                if user.telegram_id:
+                    list_users.append({'telegram_id': user.telegram_id,
+                                       'username': user.username,
+                                       'fio': user.fio,
+                      'phone': user.phone,
+                      'block' :user.block
+                    })
+            return JsonResponse({'data': list_users}, safe=False)
+
+@csrf_exempt
+def get_admin(request):
+    if request.method == 'GET':
+        api_key = request.headers.get("Authorization")
+        if api_key != "Bearer {}".format('<BOT_TOKEN>'):
+            return JsonResponse(
+                {"error": "Unauthorized"},
+                status=401
+            )
+        else:
+            users = Admin.objects.all()
+            list_users = []
+            for user in users:
+                    list_users.append({'telegram_id': user.telegram_id})
+            return JsonResponse({'data': list_users}, safe=False)
